@@ -9,9 +9,6 @@
 /* Begin PBXBuildFile section */
 		1D26C087C73F342795B1F8D6 /* Pods_BookAppFB.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B191F4E3487F4350A7636B54 /* Pods_BookAppFB.framework */; };
 		270518D22467485A00D862A5 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = 270518D12467485A00D862A5 /* Store.swift */; };
-		2709B4B62464F484003DA09D /* CollectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2709B4B52464F484003DA09D /* CollectionViewModel.swift */; };
-		2709B4B92464F614003DA09D /* LibraryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2709B4B82464F614003DA09D /* LibraryViewModel.swift */; };
-		2709B4BB2464F834003DA09D /* ContentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2709B4BA2464F834003DA09D /* ContentViewModel.swift */; };
 		2719523B246F83FA00F9E0B5 /* Recent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2719523A246F83FA00F9E0B5 /* Recent.swift */; };
 		2719F02E2464B1F90065688E /* books.txt in Resources */ = {isa = PBXBuildFile; fileRef = 2719EFC32464B1F90065688E /* books.txt */; };
 		2719F02F2464B1F90065688E /* bookDataBackup 2.json in Resources */ = {isa = PBXBuildFile; fileRef = 2719EFC42464B1F90065688E /* bookDataBackup 2.json */; };
@@ -519,6 +516,7 @@
 		2733A6C32471C1350022476A /* Hyperion.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 2733A5402471C1350022476A /* Hyperion.jpg */; };
 		2733A6C42471C1350022476A /* All the Pretty Horses.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 2733A5412471C1350022476A /* All the Pretty Horses.jpg */; };
 		2733A6C52471C1350022476A /* Gone With the Wind.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 2733A5422471C1350022476A /* Gone With the Wind.jpg */; };
+		2736111124772EFF00411C0F /* CustomFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2736111024772EFF00411C0F /* CustomFlowLayout.swift */; };
 		27459DF324706FD500874C77 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27459DF224706FD500874C77 /* Helpers.swift */; };
 		278BC097246B436E00AB0FBB /* fixedYear 2.json in Resources */ = {isa = PBXBuildFile; fileRef = 278BC096246B436D00AB0FBB /* fixedYear 2.json */; };
 		278BC099246C9C2F00AB0FBB /* Loading.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 278BC098246C9C2F00AB0FBB /* Loading.jpg */; };
@@ -540,9 +538,6 @@
 /* Begin PBXFileReference section */
 		20D808EA42C734324CDA39F2 /* Pods-BookAppFB.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BookAppFB.debug.xcconfig"; path = "Target Support Files/Pods-BookAppFB/Pods-BookAppFB.debug.xcconfig"; sourceTree = "<group>"; };
 		270518D12467485A00D862A5 /* Store.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
-		2709B4B52464F484003DA09D /* CollectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewModel.swift; sourceTree = "<group>"; };
-		2709B4B82464F614003DA09D /* LibraryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryViewModel.swift; sourceTree = "<group>"; };
-		2709B4BA2464F834003DA09D /* ContentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewModel.swift; sourceTree = "<group>"; };
 		2719523A246F83FA00F9E0B5 /* Recent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recent.swift; sourceTree = "<group>"; };
 		2719EFC32464B1F90065688E /* books.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = books.txt; sourceTree = "<group>"; };
 		2719EFC42464B1F90065688E /* bookDataBackup 2.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "bookDataBackup 2.json"; sourceTree = "<group>"; };
@@ -1050,6 +1045,7 @@
 		2733A5402471C1350022476A /* Hyperion.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = Hyperion.jpg; sourceTree = "<group>"; };
 		2733A5412471C1350022476A /* All the Pretty Horses.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "All the Pretty Horses.jpg"; sourceTree = "<group>"; };
 		2733A5422471C1350022476A /* Gone With the Wind.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "Gone With the Wind.jpg"; sourceTree = "<group>"; };
+		2736111024772EFF00411C0F /* CustomFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomFlowLayout.swift; sourceTree = "<group>"; };
 		27459DF224706FD500874C77 /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
 		278BC096246B436D00AB0FBB /* fixedYear 2.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "fixedYear 2.json"; sourceTree = "<group>"; };
 		278BC098246C9C2F00AB0FBB /* Loading.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = Loading.jpg; sourceTree = "<group>"; };
@@ -1113,9 +1109,6 @@
 		2709B4B72464F4B3003DA09D /* View Models */ = {
 			isa = PBXGroup;
 			children = (
-				2709B4B52464F484003DA09D /* CollectionViewModel.swift */,
-				2709B4B82464F614003DA09D /* LibraryViewModel.swift */,
-				2709B4BA2464F834003DA09D /* ContentViewModel.swift */,
 				27277662246601B4007A6CBF /* BookData.swift */,
 				27B570812470867A00EE29C8 /* SearchBarViewModel.swift */,
 			);
@@ -1672,6 +1665,7 @@
 			children = (
 				2719F0A42464C3950065688E /* BookCell.swift */,
 				2719F0A02464C33C0065688E /* CollectionView.swift */,
+				2736111024772EFF00411C0F /* CustomFlowLayout.swift */,
 				2719F09F2464C33C0065688E /* CustomCollectionView.swift */,
 				2719F09D2464C32E0065688E /* Library.swift */,
 			);
@@ -2369,7 +2363,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				27B570842470967A00EE29C8 /* Result.swift in Sources */,
-				2709B4B62464F484003DA09D /* CollectionViewModel.swift in Sources */,
 				2719F0A12464C33C0065688E /* CustomCollectionView.swift in Sources */,
 				2727767324660DEB007A6CBF /* StoreRow.swift in Sources */,
 				27B570862470988D00EE29C8 /* RecentSearch.swift in Sources */,
@@ -2380,7 +2373,6 @@
 				2727766D24660B36007A6CBF /* SearchBar.swift in Sources */,
 				27277663246601B4007A6CBF /* BookData.swift in Sources */,
 				27B5708A2470A2D200EE29C8 /* SearchPageStore.swift in Sources */,
-				2709B4B92464F614003DA09D /* LibraryViewModel.swift in Sources */,
 				2727767224660DEB007A6CBF /* StorePage.swift in Sources */,
 				2719F09A2464B2140065688E /* bookData.swift in Sources */,
 				2719F0992464B2140065688E /* Book.swift in Sources */,
@@ -2388,7 +2380,6 @@
 				278BE8A42464AE4B00606A39 /* BookRepository.swift in Sources */,
 				2727766C24660B36007A6CBF /* SearchPage.swift in Sources */,
 				2719F0A22464C33C0065688E /* CollectionView.swift in Sources */,
-				2709B4BB2464F834003DA09D /* ContentViewModel.swift in Sources */,
 				2719F09E2464C32E0065688E /* Library.swift in Sources */,
 				2727766F24660B36007A6CBF /* SearchRow.swift in Sources */,
 				278BE8922464AA9A00606A39 /* ContentView.swift in Sources */,
@@ -2396,6 +2387,7 @@
 				278BE88D2464AA9A00606A39 /* SceneDelegate.swift in Sources */,
 				27459DF324706FD500874C77 /* Helpers.swift in Sources */,
 				2719523B246F83FA00F9E0B5 /* Recent.swift in Sources */,
+				2736111124772EFF00411C0F /* CustomFlowLayout.swift in Sources */,
 				2727766E24660B36007A6CBF /* HyperLink.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

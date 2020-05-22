@@ -17,7 +17,7 @@ struct CollectionView: UIViewControllerRepresentable {
     
     var didSelectItem : () -> ()
    
-    class Coordinator: NSObject, UICollectionViewDelegate, UINavigationControllerDelegate, UICollectionViewDataSource, UICollectionViewDragDelegate, UICollectionViewDropDelegate, NSFetchedResultsControllerDelegate {
+    class Coordinator: NSObject, UICollectionViewDelegate, UINavigationControllerDelegate, UICollectionViewDataSource, NSFetchedResultsControllerDelegate {
         
         var parent : CollectionView
         
@@ -26,6 +26,8 @@ struct CollectionView: UIViewControllerRepresentable {
         var commitPredicate: NSPredicate?
         
         var cvc: CustomCollectionView!
+        var moveIndexPath: IndexPath?
+        var longPressGestureRecognizer: UILongPressGestureRecognizer!
         
         private var currentOffset: CGPoint = CGPoint(x: 0, y: 0)
         
@@ -34,7 +36,7 @@ struct CollectionView: UIViewControllerRepresentable {
             
             self.container = (UIApplication.shared.delegate as! AppDelegate).persistentContainer
             
-            let layout = UICollectionViewFlowLayout()
+            let layout = CustomFlowLayout()
             layout.scrollDirection = .vertical
             layout.itemSize = CGSize(width: 111, height: 171)
             layout.estimatedItemSize = CGSize(width: 111, height: 171)
@@ -42,10 +44,12 @@ struct CollectionView: UIViewControllerRepresentable {
             layout.sectionInset = UIEdgeInsets(top: 0, left: 20, bottom: 10, right: 9)
             cvc = CustomCollectionView(collectionViewLayout: layout)
             super.init()
+            longPressGestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(self.longPress))
+            longPressGestureRecognizer.minimumPressDuration = 0.3
+            cvc.collectionView.addGestureRecognizer(longPressGestureRecognizer)
             cvc.collectionView.delegate = self
             cvc.collectionView.dataSource = self
-            cvc.collectionView.dragDelegate = self
-            cvc.collectionView.dropDelegate = self
+       
             cvc.collectionView.reorderingCadence = .fast
             
             loadSavedData()
@@ -84,6 +88,58 @@ struct CollectionView: UIViewControllerRepresentable {
                 }
             }
         }
+        
+        func movedCell() -> BookCell? {
+            guard let indexPath = moveIndexPath else {
+                return nil
+            }
+            
+            return cvc.collectionView.cellForItem(at: indexPath) as? BookCell
+        }
+        
+        func animatePickingUpCell(cell: BookCell?) {
+          UIView.animate(withDuration: 0.1, delay: 0.0, options: [.allowUserInteraction, .beginFromCurrentState], animations: { () -> Void in
+            cell?.alpha = 0.7
+          }, completion: nil)
+        }
+        
+        func animatePuttingDownCell(cell: BookCell?) {
+          UIView.animate(withDuration: 0.1, delay: 0.0, options: [.allowUserInteraction, .beginFromCurrentState], animations: { () -> Void in
+            cell?.alpha = 1.0
+          }, completion: { finished in
+            cell?.startWiggling()
+          })
+        }
+        
+        @objc func longPress(_ gesture: UILongPressGestureRecognizer) {
+            if !cvc.isEditing {
+                return
+            }
+            let location = gesture.location(in: cvc.collectionView)
+            moveIndexPath = cvc.collectionView.indexPathForItem(at: location) // pretty cool
+            switch (gesture.state) {
+            case .began:
+                guard let indexPath = moveIndexPath else {
+                    return
+                }
+                
+                cvc.setEditing(true, animated: true)
+                cvc.collectionView.beginInteractiveMovementForItem(at: indexPath)
+                movedCell()?.startWiggling()
+                animatePickingUpCell(cell: movedCell())
+            case .changed:
+                cvc.collectionView.updateInteractiveMovementTargetPosition(location)
+            case .ended:
+                cvc.collectionView.endInteractiveMovement()
+                animatePuttingDownCell(cell: movedCell())
+                moveIndexPath = nil
+            default:
+                cvc.collectionView.cancelInteractiveMovement()
+                moveIndexPath = nil
+            }
+        }
+        
+        
 // MARK -- fetched results controller
         func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
             switch type {
@@ -97,6 +153,10 @@ struct CollectionView: UIViewControllerRepresentable {
             }
         }
 // MARK -- CollectionView Delegates
+        func collectionView(_ collectionView: UICollectionView, canMoveItemAt indexPath: IndexPath) -> Bool {
+            true
+        }
+        
         func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
             if let cell = collectionView.cellForItem(at: indexPath) {
                 UIView.animate(withDuration: 0.1) {
@@ -114,15 +174,6 @@ struct CollectionView: UIViewControllerRepresentable {
             
             parent.didSelectItem()
         }
-        // does not appear to work
-//
-//        func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
-//            if parent.library.editMode == true {
-//                if let cell = collectionView.cellForItem(at: indexPath) as? BookCell {
-//                    cell.button.isHidden = false
-//                }
-//            }
-//        }
         
         func numberOfSections(in collectionView: UICollectionView) -> Int {
             return 1
@@ -130,7 +181,7 @@ struct CollectionView: UIViewControllerRepresentable {
         func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
             //return books.count
             let sectionInfo = fetchedResultsController.sections![section]
-            print(sectionInfo.numberOfObjects)
+//            print(sectionInfo.numberOfObjects)
             return sectionInfo.numberOfObjects
         }
         
@@ -143,81 +194,29 @@ struct CollectionView: UIViewControllerRepresentable {
             let title = fetchedResultsController.object(at: indexPath).title ?? ""
             cell.configure(image: image, title: title)
             cell.button.addTarget(self, action: #selector(deleteItem), for: .touchUpInside)
+        
+            if cvc.isEditing {
+                cell.startWiggling()
+            } else {
+                cell.stopWiggling()
+            }
+            
+            if indexPath.item == moveIndexPath?.item {
+                cell.alpha = 0.7
+            } else {
+                cell.alpha = 1.0
+            }
+            
             return cell
         }
         
-        func collectionView(_ collectionView: UICollectionView, canHandle session: UIDropSession) -> Bool {
-            return true
-        }
-
-        func collectionView(_ collectionView: UICollectionView, dragSessionAllowsMoveOperation session: UIDragSession) -> Bool {
-            return true
+        func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+            reorderItems(collectionView: collectionView, sourceIndexPath: sourceIndexPath, destinationIndexPath: destinationIndexPath)
         }
         
-        func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
-            print("itemsForBeginning session")
-            let cell = collectionView.cellForItem(at: indexPath) as! BookCell
-            //cell.button.isHidden = true
-            //cell.stopWiggling()
-            let object = fetchedResultsController.object(at: indexPath)
-            let itemProvider = NSItemProvider(object: "\(indexPath)" as NSString) // ?? not sure about the index path thing
-            let dragItem = UIDragItem(itemProvider: itemProvider)
-            dragItem.localObject = object
-            dragItem.previewProvider = {
-                let view = cell.image!
-                return UIDragPreview(view: view)
-            }
-            session.localContext = cell
-            return [dragItem]
-        }
-    
-        func collectionView(_ collectionView: UICollectionView, dragPreviewParametersForItemAt indexPath: IndexPath) -> UIDragPreviewParameters? {
-            print("dragPreviewParametersForItemAt \(indexPath.item)")
-            let cell = collectionView.cellForItem(at: indexPath) as! BookCell
-            cell.button.isHidden = true
-            let previewParameters = UIDragPreviewParameters()
-            previewParameters.visiblePath = UIBezierPath(roundedRect: cell.image.frame, cornerRadius: 5)
-            previewParameters.backgroundColor = .clear
-            return previewParameters
-        }
-    
-        
-        func collectionView(_ collectionView: UICollectionView, dragSessionDidEnd session: UIDragSession) {
-            if let cell = session.localContext as? BookCell {
-                print("dragSessionDidEnd")
-                cell.button.isHidden = false
-                cell.startWiggling()
-            }
-        }
-        
-        func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
-            print("performDropWith")
-            let destinationIndexPath: IndexPath
-            if let indexPath = coordinator.destinationIndexPath {
-                destinationIndexPath = indexPath
-            } else {
-                destinationIndexPath = IndexPath(row: fetchedResultsController.sections![0].numberOfObjects, section: 0)
-            }
-            
-            switch coordinator.proposal.operation {
-                case .move:
-                    reorderItems(coordinator: coordinator, destinationIndexPath: destinationIndexPath, collectionView: collectionView)
-                    print("case .move")
-                default: return
-            }
-            
-        }
-        
-        func collectionView(_ collectionView: UICollectionView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UICollectionViewDropProposal {
-            if collectionView.hasActiveDrag, let _ = destinationIndexPath {
-                return UICollectionViewDropProposal(operation: .move, intent: .insertAtDestinationIndexPath)
-            } else {
-                return UICollectionViewDropProposal(operation: .forbidden)
-            }
-        }
 
         func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-            if cvc.collectionView.isDragging == true {
+            if cvc.isEditing == true {
                 if parent.library.editMode == true {
                     let cell = cell as! BookCell
                     cell.startWiggling()
@@ -227,7 +226,7 @@ struct CollectionView: UIViewControllerRepresentable {
         }
         
         func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-            if cvc.collectionView.isDragging == true {
+            if cvc.isEditing == true {
                 if parent.library.editMode == true {
                     let cell = cell as! BookCell
                     cell.stopWiggling()
@@ -236,14 +235,10 @@ struct CollectionView: UIViewControllerRepresentable {
             }
         }
 // MARk -- helper functions
-        private func reorderItems(coordinator: UICollectionViewDropCoordinator, destinationIndexPath: IndexPath, collectionView: UICollectionView) {
-            let items = coordinator.items
-            if  items.count == 1, let item = items.first,
-                let sourceIndexPath = item.sourceIndexPath,
-                let _ = item.dragItem.localObject as? CoreBook,
-                let books = fetchedResultsController.fetchedObjects {
+        private func reorderItems(collectionView: UICollectionView, sourceIndexPath: IndexPath, destinationIndexPath: IndexPath) {
+            if let books = fetchedResultsController.fetchedObjects {
                 collectionView.performBatchUpdates ({
-                    
+
                     cvc.collectionView.forLastBaselineLayout.layer.speed = 0.6
                     
                     if sourceIndexPath.item < destinationIndexPath.item {
@@ -259,20 +254,17 @@ struct CollectionView: UIViewControllerRepresentable {
                             }
                         }
                     }
+
                     // set moved item to destination layout
                     books[sourceIndexPath.item].setValue(Int16(destinationIndexPath.item), forKey: "layout")
 
                     loadSavedData()
                     
-                    collectionView.deleteItems(at: [sourceIndexPath])
-                    collectionView.insertItems(at: [destinationIndexPath])
                 }, completion: { finished in
                     if finished == true {
                         self.cvc.collectionView.forLastBaselineLayout.layer.speed = 1.0
                     }
                 })
-                
-                saveContext()
             }
         }
         
@@ -282,88 +274,79 @@ struct CollectionView: UIViewControllerRepresentable {
                 if parent.library.sortDescriptors[0].key != "layout" {
                     // sort by layout
                     parent.library.sortDescriptors = [NSSortDescriptor(key: "layout", ascending: true)]
-                    // refresh fetch request
-                    loadSavedData()
-                    // disable scroll and enable dragInteraction
-                    //self.cvc.collectionView.isScrollEnabled = false
-                    self.cvc.collectionView.dragInteractionEnabled = true
-                    // show all edit buttons for visible cells
-                    self.cvc.showButtons()
-                    // animate changes
-//                    self.cvc.collectionView.performBatchUpdates({
-//                        cvc.collectionView.forLastBaselineLayout.layer.speed = 0.9
-//                        self.cvc.collectionView.reloadSections(IndexSet(integersIn: 0...0))
-//                    }, completion: { finished in
-//                        if finished {
-//                            self.cvc.collectionView.forLastBaselineLayout.layer.speed = 1.0
-//                        }
-//                })
-                    // wiggle
-                    self.cvc.setEditing(true, animated: true)
-                    self.cvc.collectionView.reloadData()
-                    
+                    self.cvc.collectionView.performBatchUpdates({
+                        // refresh fetch request
+                        loadSavedData()
+                        
+                    }, completion: { finished in
+                        if finished {
+                            self.cvc.collectionView.reloadSections(IndexSet(integersIn: 0...0)) // required for animation for some reason
+                            // show all edit buttons for visible cells
+                            self.cvc.showButtons()
+                            // wiggle
+                            self.cvc.setEditing(true, animated: true)
+                        }
+                    })
                 } else {
-                    // always show buttons and prepare for drag/drop, but in this case, make it instantaneous
+                    // show buttons
                     self.cvc.showButtons()
-                    // enable drag interaction
-                    self.cvc.collectionView.dragInteractionEnabled = true
                     // wiggle
                     self.cvc.setEditing(true, animated: true)
                 }
             } else {
                 // prevents unnecessary execution
-                if self.cvc.collectionView.dragInteractionEnabled == true {
-                    //self.cvc.collectionView.isScrollEnabled = true
-                    self.cvc.collectionView.dragInteractionEnabled = false
+                if self.cvc.isEditing {
                     // hide buttons
                     self.cvc.hideButtons()
                     // turn off wiggle
                     self.cvc.setEditing(false, animated: true)
-                    // reload data
-                    self.cvc.collectionView.reloadData()
                 }
             }
         }
         
         func refreshSort() {
-            loadSavedData()
-            self.cvc.collectionView.reloadData()
+            self.cvc.collectionView.performBatchUpdates({
+                loadSavedData()
+            }, completion: { finished in
+                if finished {
+                    self.cvc.collectionView.reloadSections(IndexSet(integersIn: 0...0))
+                }
+            })
         }
         
+        /* FIX collectionview with one cell holds cell at index 1 for some reason?? It started doing it a little while ago but didn't always do it*/
         @objc func deleteItem(_ sender: UIButton) {
-            if let cell = sender.superview as? BookCell {
-                let cv = cell.superview as! UICollectionView
-                if cv.hasActiveDrag || cv.hasActiveDrop {
+            if let cell = sender.superview?.superview as? BookCell {
+                guard let index = fetchedResultsController.fetchedObjects!.firstIndex(where: { $0.title == cell.title }) else {
+                    print("Error: Book not found")
                     return
                 }
-                if let index = fetchedResultsController.fetchedObjects!.firstIndex(where: { $0.title! == cell.title }) {
-                    //let book = books[indexPath]
-                    let book = fetchedResultsController.object(at: IndexPath(row: index, section: 0))
-                    print("deleting title \(book.title!) with added \(book.added) and layout \(book.layout)")
-                    if let books = fetchedResultsController.fetchedObjects {
+                let book = fetchedResultsController.object(at: IndexPath(row: index, section: 0))
+                //print("deleting title \(book.title!) with added \(book.added) and layout \(book.layout)")
+                if let books = fetchedResultsController.fetchedObjects {
 
-                        for i in books {
-                            if i.added < book.added {
-                                i.setValue(i.added + 1, forKey: "added")
-                                //print("decreased added for title \(i.title!) from \(i.added + 1) to \(i.added)")
-                            }
-                            if i.layout > book.layout {
-                                i.setValue(i.layout - 1, forKey: "layout")
-                                //print("decreased layout for title \(i.title!) from \(i.layout + 1) to \(i.layout)")
-                            }
+                    // I think there's a bug here
+                    for i in books {
+                        if i.added < book.added {
+                            i.setValue(i.added - 1, forKey: "added")
+                            //print("decreased added for title \(i.title!) from \(i.added + 1) to \(i.added)")
                         }
-                        
-                        fetchedResultsController.managedObjectContext.delete(book)
-                        
-                        saveContext()
-                        loadSavedData()
+                        if i.layout > book.layout {
+                            i.setValue(i.layout - 1, forKey: "layout")
+                            //print("decreased layout for title \(i.title!) from \(i.layout + 1) to \(i.layout)")
+                        }
                     }
+                    
+                    fetchedResultsController.managedObjectContext.delete(book)
+                    
+                    saveContext()
+                    
+                    loadSavedData()
                 } else {
-                    print("Error: Cell \(cell.title!) not found")
-                    return
+                    print("Error: book not in fetched results")
                 }
             } else {
-                print("Error: deleteItem: cast failed")
+                print("Error: Could not cast")
             }
         }
     }

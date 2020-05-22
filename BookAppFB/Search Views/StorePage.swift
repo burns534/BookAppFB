@@ -42,9 +42,9 @@ struct StorePage: View {
                         }
                     if !self.books.contains(where: { $0.title == self.library.contextBook.title }) {
                         Button(action: {
-                            let _ = makeCoreBook(FullBook(andSetAdded: self.library.contextBook, added: self.library.books.count), context: self.moc, layout: self.books.count)
+                            let newBook = makeCoreBook(FullBook(andSetAdded: self.library.contextBook, added: self.books.count), context: self.moc, layout: self.books.count)
                             
-                            //print("Added title \(newBook.title!) with added \(newBook.added) and layout \(newBook.layout)")
+                            print("Added title \(newBook.title!) with added \(newBook.added) and layout \(newBook.layout)")
                             
                             do {
                                 try self.moc.save()
@@ -81,7 +81,7 @@ struct StorePage: View {
                                 }
                                 for i in self.books {
                                     if i.added < added {
-                                        i.setValue(i.added + 1, forKey: "added")
+                                        i.setValue(i.added - 1, forKey: "added")
                                         //print("decreased added for title \(i.title!) from \(i.added + 1) to \(i.added)")
                                     }
                                     if i.layout > layout {
@@ -131,6 +131,9 @@ struct StorePage: View {
                     }
                 }
             }
+        }
+        .onDisappear {
+            self.presentationMode.wrappedValue.dismiss()
         }
     }
 }

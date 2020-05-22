@@ -15,6 +15,8 @@ struct SearchPageStore: View {
     
     @Environment(\.managedObjectContext) var moc
     
+    @State var pushStore : Bool = false
+    
     var body: some View {
         ScrollView {
             VStack(alignment: .leading) {
@@ -62,7 +64,10 @@ struct SearchPageStore: View {
                             .foregroundColor(.olive)
                         Divider()
                         ForEach(sbvm.results, id: \.title) { book in
-                            NavigationLink(destination: StorePage().environment(\.managedObjectContext, self.moc).environmentObject(self.library)) {
+                            Button(action: {
+                                self.library.contextBook = book
+                                self.pushStore = true
+                            }) {
                                 HStack {
                                     Result(book: book)
                                         .frame(height: 35)
@@ -70,6 +75,10 @@ struct SearchPageStore: View {
                                 }
                             }
                         }
+                        NavigationLink(destination: StorePage().environment(\.managedObjectContext, self.moc).environmentObject(self.library), isActive: $pushStore) {
+                            Text("")
+                        }
+                        .hidden()
                     }
                     .padding()
                 }

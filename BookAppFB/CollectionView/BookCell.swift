@@ -16,6 +16,9 @@ class BookCell: UICollectionViewCell {
     
     var title : String!
     
+    var imageViewHeightConstraint: NSLayoutConstraint!
+    var imageViewWidthConstraint: NSLayoutConstraint!
+    
     func configure(image: UIImage, title: String) {
         self.image.image = image
         self.title = title
@@ -46,11 +49,19 @@ class BookCell: UICollectionViewCell {
         self.button.imageView?.clipsToBounds = true
         self.button.layer.backgroundColor = UIColor.darkWhite.cgColor
         self.button.isHidden = true
-        //print("selfForItemAt: \(indexPath)")
+        
         self.backgroundColor = .clear
         
         self.contentView.addSubview(image)
         self.contentView.addSubview(button)
+        
+        // This does not appear to do anything
+        imageViewHeightConstraint = NSLayoutConstraint(item: image!, attribute: .height, relatedBy: .lessThanOrEqual, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 160)
+        imageViewWidthConstraint = NSLayoutConstraint(item: image!, attribute: .width, relatedBy: .lessThanOrEqual, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 100)
+        
+        self.contentView.addConstraint(imageViewHeightConstraint)
+        self.contentView.addConstraint(imageViewWidthConstraint)
+        
     }
     
     required init?(coder: NSCoder) {
@@ -90,11 +101,11 @@ class BookCell: UICollectionViewCell {
         contentView.layer.removeAllAnimations()
     }
     
-//    override func prepareForReuse() {
-//      super.prepareForReuse()
-//
-//      stopWiggling()
-//    }
+    override func prepareForReuse() {
+      super.prepareForReuse()
+
+      stopWiggling()
+    }
     
     // utility
     func buttonShadow(view: UIView, radius: CGFloat, color: CGColor?, opacity: Float = 1.0, offset: CGSize = .zero) {

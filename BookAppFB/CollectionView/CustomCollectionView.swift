@@ -73,5 +73,7 @@ class CustomCollectionView: UICollectionViewController {
         collectionView.rightAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.rightAnchor).identifier = "cv rightAnchor"
         collectionView.leftAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leftAnchor).identifier = "cv leftAnchor"
         
+        collectionView.isPrefetchingEnabled = true
+        
     }
 }

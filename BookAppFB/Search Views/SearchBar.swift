@@ -57,8 +57,8 @@ struct SearchBar : UIViewRepresentable {
             // if searching store
             if ( searchBar.selectedScopeButtonIndex == 1 || parent.sbvm.force ) && searchText.count >= 2 {
                 parent.ref
-                    .whereField("title", isLessThan: incrementString(searchText))
-                    .whereField("title", isGreaterThanOrEqualTo: searchText)
+                    .whereField("imageName", isLessThan: incrementString(searchText).lowercased())
+                    .whereField("imageName", isGreaterThanOrEqualTo: searchText.lowercased())
                     .limit(to: 20)
                     .getDocuments { snapshot, error in
                         if let error = error {
@@ -107,7 +107,7 @@ struct SearchBar : UIViewRepresentable {
     func makeUIView(context: Context) -> UISearchBar {
         search.delegate = context.coordinator
         search.searchBarStyle = UISearchBar.Style.minimal
-        search.autocapitalizationType = UITextAutocapitalizationType.words
+        search.autocapitalizationType = UITextAutocapitalizationType.sentences
         search.isTranslucent = true
         search.spellCheckingType = UITextSpellCheckingType.yes
         search.placeholder = "Books"
@@ -127,8 +127,8 @@ struct SearchBar : UIViewRepresentable {
             // check if it's valid before updating
             let searchBar = uiView
             // perform search
-            ref.whereField("title", isLessThan: incrementString(sbvm.text))
-                .whereField("title", isGreaterThan: decrementString(sbvm.text))
+            ref.whereField("imageName", isLessThan: incrementString(sbvm.text).lowercased())
+                .whereField("imageName", isGreaterThanOrEqualTo: sbvm.text.lowercased())
             .limit(to: 20)
             .getDocuments { snapshot, error in
                 if let error = error {
@@ -144,7 +144,6 @@ struct SearchBar : UIViewRepresentable {
                         
                         // load page directly if there is a match - doesn't work currently
                         if self.sbvm.results.count == 1 {
-                            print("match")
                             self.library.contextBook = self.sbvm.results[0]
                             self.sbvm.push = true
                         }

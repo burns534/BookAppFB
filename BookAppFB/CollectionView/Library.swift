@@ -45,11 +45,9 @@ struct Library: View {
                             },
                             .default(Text("Recently Added")) { self.library.sortDescriptors = [NSSortDescriptor(key: "added", ascending: false)]
                                 self.library.didSort = true
-                                print("recently added")
                             },
                             .default(Text("Manual")) { self.library.sortDescriptors = [NSSortDescriptor(key: "layout", ascending: true)]
                                 self.library.didSort = true
-                                print("manual")
                             },
                             .cancel()])
                     }

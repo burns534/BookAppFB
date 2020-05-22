@@ -11,11 +11,6 @@ import Combine
 import SwiftUI
 import CoreData
 
-func rawBook(_ book: Book) -> (RawBook){
-    let x = book
-    return RawBook(author: x.author, country: x.country, language: x.language, link: x.link, pages: x.pages, title: x.title, year: x.year, id: x.id, added: x.added, isLiked: x.isLiked, imageName: x.imageName)
-}
-
 var sortDescriptors : [NSSortDescriptor] = [NSSortDescriptor(keyPath: \CoreBook.added, ascending: false)]
 
 class BookData: NSObject, ObservableObject {
