@@ -42,9 +42,9 @@ struct StorePage: View {
                         }
                     if !self.books.contains(where: { $0.title == self.library.contextBook.title }) {
                         Button(action: {
-                            let newBook = makeCoreBook(FullBook(andSetAdded: self.library.contextBook, added: self.books.count), context: self.moc, layout: self.books.count)
+                            let _ = makeCoreBook(FullBook(andSetAdded: self.library.contextBook, added: self.books.count), context: self.moc, layout: self.books.count)
                             
-                            print("Added title \(newBook.title!) with added \(newBook.added) and layout \(newBook.layout)")
+                            //print("Added title \(newBook.title!) with added \(newBook.added) and layout \(newBook.layout)")
                             
                             do {
                                 try self.moc.save()
