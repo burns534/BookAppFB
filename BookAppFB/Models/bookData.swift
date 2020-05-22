@@ -8,12 +8,9 @@ Helpers for loading images and data.
 import UIKit
 import SwiftUI
 
-
-var bookData : [RawBook] = load("bookData.json")
-var onePass : [OnePass] = load("fixedYear 2.json")
-
-
-//var bookDataDict : [Int : Book] = [:]
+//
+//var bookData : [RawBook] = load("bookData.json")
+//var onePass : [OnePass] = load("fixedYear 2.json")
 
 func load<T: Decodable>(_ filename: String) -> T {
     let data: Data

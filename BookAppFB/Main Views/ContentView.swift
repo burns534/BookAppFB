@@ -27,12 +27,6 @@ struct ContentView: View {
                         Text("Library")
                 }
                 .buttonStyle(PlainButtonStyle())
-                Store()
-                    .tabItem {
-                        Image(systemName: "bag")
-                        Text("Store")
-                }
-                .buttonStyle(PlainButtonStyle())
                 SearchPage() // parameter is not doing anything
                     .tabItem {
                         Image(systemName: "magnifyingglass")
