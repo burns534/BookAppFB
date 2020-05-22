@@ -36,12 +36,12 @@ struct SearchRow: View {
     }
 }
 
-struct SearchRow_Previews: PreviewProvider {
-    static var previews: some View {
-        VStack {
-            SearchRow(book: FullBook(fromBook: bookData[8].toBook()))
-            SearchRow(book: FullBook(fromBook: bookData[9].toBook()))
-            SearchRow(book: FullBook(fromBook: bookData[33].toBook()))
-        }
-    }
-}
+//struct SearchRow_Previews: PreviewProvider {
+//    static var previews: some View {
+//        VStack {
+//            SearchRow(book: FullBook(fromBook: bookData[8].toBook()))
+//            SearchRow(book: FullBook(fromBook: bookData[9].toBook()))
+//            SearchRow(book: FullBook(fromBook: bookData[33].toBook()))
+//        }
+//    }
+//}

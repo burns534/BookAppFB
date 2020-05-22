@@ -21,9 +21,3 @@ struct Result: View {
 
     }
 }
-
-struct Result_Previews: PreviewProvider {
-    static var previews: some View {
-        Result(book: FullBook(fromBook: bookData[10].toBook()))
-    }
-}
