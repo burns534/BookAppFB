@@ -78,7 +78,8 @@ struct SearchPageStore: View {
                         NavigationLink(destination: StorePage().environment(\.managedObjectContext, self.moc).environmentObject(self.library), isActive: $pushStore) {
                             Text("")
                         }
-                        .hidden()
+                        .frame(width: 0, height: 0)
+                        .clipped()
                     }
                     .padding()
                 }

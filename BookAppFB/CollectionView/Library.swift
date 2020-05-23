@@ -82,7 +82,8 @@ struct Library: View {
                         book: library.contextBook).environment(\.managedObjectContext, self.moc).environmentObject(self.library),
                         isActive: $detailView,
                         label: { Text("") })
-                        .hidden()
+                        .frame(width: 0, height: 0)
+                        .clipped()
                 }
             }
             .navigationBarTitle("")

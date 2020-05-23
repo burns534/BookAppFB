@@ -42,8 +42,8 @@ struct SearchPage: View {
                 NavigationLink(destination: StorePage().environmentObject(self.library), isActive: self.$sbvm.push) {
                     Text("")
                 }
-                .hidden()
-                Spacer()
+                .frame(width: 0, height: 0)
+                .clipped()
             }
             .buttonStyle(PlainButtonStyle())
             .navigationBarTitle("")
